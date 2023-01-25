@@ -1,0 +1,40 @@
+docker run -it -e POSTGRES_USER="root" -e POSTGRES_PASSWORD="root" -e POSTGRES_DB="ny_taxi" -v d:/temp/zoomcamp/ny_taxi_postrges_data:/var/lib/postgresql/data -p 5432:5432 --network=pg-network --name=pg-database postgres:13
+
+
+https://www.nyc.gov/assets/tlc/downloads/pdf/data_dictionary_trip_records_yellow.pdf
+
+
+docker run -it `
+	-e PGADMIN_DEFAULT_EMAIL="admin@admin.com" `
+	-e PGADMIN_DEFAULT_PASSWORD="root" `
+	-p 8080:80 `
+	--network=pg-network `
+	--name pgadmin `
+	dpage/pgadmin4
+	
+python ingest_data.py `
+	--user=root `
+    --password=root `
+    --host=localhost `
+    --port=5432 `
+    --db=ny_taxi `
+    --table_name=yellow_taxi_trips
+	
+docker build -t taxi_ingest:v001 .
+
+docker run -it `
+	--network=pg-network `
+	taxi_ingest:v001 `
+		--user=root `
+		--password=root `
+		--host=pg-database2 `
+		--port=5432 `
+		--db=ny_taxi `
+		--table_name=yellow_taxi_trips
+		
+COPY zones
+FROM 'd:\temp\zoomcamp\taxi+_zone_lookup.csv'
+DELIMITER ','
+CSV HEADER;
+
+cat d:\temp\zoomcamp\green_tripdata_2019-01.csv | psql.exe -d ny_taxi -U root -c "COPY green_trips_2019 FROM STDIN DELIMITER ',' CSV HEADER"
