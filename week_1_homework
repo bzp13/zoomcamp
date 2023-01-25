@@ -1,0 +1,18 @@
+-- SELECT count(1) from green_trips_2019
+-- where lpep_pickup_datetime >= '2019-01-15' and lpep_dropoff_datetime < '2019-01-16'
+
+-- select lpep_dropoff_datetime::TIMESTAMP::DATE, max(trip_distance)
+-- from green_trips_2019
+-- group by 1
+-- order by 2 desc
+
+-- SELECT passenger_count,count(*)
+-- FROM green_trips_2019
+-- where lpep_pickup_datetime::TIMESTAMP::DATE = '2019-01-01'
+-- group by passenger_count
+
+select zp."Zone" as puzone, zd."Zone" as dozone, g.tip_amount from green_trips_2019 g
+join zones zp on g."PULocationID" = zp."LocationID"
+join zones zd on g."DOLocationID" = zd."LocationID"
+where zp."Zone" = 'Astoria'
+order by 3 desc
